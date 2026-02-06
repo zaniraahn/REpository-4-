@@ -61,6 +61,7 @@ def menu():
     print("3. Total waktu belajar")
     print("4. Keluar")
     print("5. Kelola Mapel Favorit")
+    print("6. Filter per mapel")
 
 
 def kelola_favorit():
@@ -104,6 +105,58 @@ def kelola_favorit():
         else:
             print("Pilihan tidak valid")
 
+
+def filter_per_mapel():
+    if not catatan:
+        print("Belum ada catatan belajar.")
+        return
+
+    # Kumpulkan daftar mapel unik dari catatan
+    mapels = sorted({e.get("mapel", "") for e in catatan if e.get("mapel")})
+    if not mapels:
+        print("Tidak ada mapel yang tersedia di catatan.")
+        return
+
+    print("\nDaftar mapel:")
+    for i, m in enumerate(mapels, start=1):
+        print(f"{i}. {m}")
+
+    pilihan = input("Pilih nomor mapel atau ketik nama mapel: ").strip()
+
+    # Coba interpretasi sebagai nomor
+    target = None
+    if pilihan.isdigit():
+        idx = int(pilihan) - 1
+        if 0 <= idx < len(mapels):
+            target = mapels[idx]
+        else:
+            print("Nomor tidak valid.")
+            return
+    else:
+        # ambil nama seperti yang diketik (case-sensitive sederhana)
+        if pilihan in mapels:
+            target = pilihan
+        else:
+            print("Nama mapel tidak ditemukan.")
+            return
+
+    # Filter dan tampilkan entri untuk mapel yang dipilih
+    hasil = [e for e in catatan if e.get("mapel") == target]
+    if not hasil:
+        print(f"Tidak ada catatan untuk mapel {target}.")
+        return
+
+    print(f"\nCatatan untuk mapel: {target}")
+    total_menit = 0
+    for i, e in enumerate(hasil, start=1):
+        topik = e.get("topik", "-")
+        durasi = e.get("durasi", 0)
+        total_menit += durasi
+        print(f"{i}. {target} - {topik} ({durasi} menit)")
+
+    print(f"Jumlah catatan: {len(hasil)}")
+    print(f"Total waktu untuk {target}: {total_menit} menit")
+
 while True:
     menu()
     pilihan = input("Pilih menu: ")
@@ -119,5 +172,7 @@ while True:
         break
     elif pilihan == "5":
         kelola_favorit()
+    elif pilihan == "6":
+        filter_per_mapel()
     else:
         print("Pilihan tidak valid")
