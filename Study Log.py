@@ -1,5 +1,6 @@
 catatan = []
 favorit = set()
+target_harian = None  # dalam menit, None jika belum di-set
 
 def tambah_catatan():
     while True:
@@ -62,6 +63,7 @@ def menu():
     print("4. Keluar")
     print("5. Kelola Mapel Favorit")
     print("6. Filter per mapel")
+    print("7. Target Harian")
 
 
 def kelola_favorit():
@@ -157,6 +159,50 @@ def filter_per_mapel():
     print(f"Jumlah catatan: {len(hasil)}")
     print(f"Total waktu untuk {target}: {total_menit} menit")
 
+
+def set_target_harian():
+    global target_harian
+    while True:
+        print("\n--- Target Harian ---")
+        print("1. Set target harian")
+        print("2. Lihat target saat ini")
+        print("3. Hapus target")
+        print("4. Kembali")
+        pilihan = input("Pilih: ").strip()
+
+        if pilihan == "1":
+            nilai = input("Masukkan target harian (menit): ").strip()
+            if not nilai:
+                print("Input kosong.")
+                continue
+            try:
+                menit = int(nilai)
+                if menit <= 0:
+                    print("Masukkan angka positif.")
+                    continue
+                target_harian = menit
+                print(f"Target harian diset: {target_harian} menit")
+            except ValueError:
+                print("Masukkan angka bulat untuk menit.")
+
+        elif pilihan == "2":
+            if target_harian is None:
+                print("Belum ada target harian.")
+            else:
+                print(f"Target harian saat ini: {target_harian} menit")
+
+        elif pilihan == "3":
+            if target_harian is None:
+                print("Belum ada target untuk dihapus.")
+            else:
+                target_harian = None
+                print("Target harian dihapus.")
+
+        elif pilihan == "4":
+            break
+        else:
+            print("Pilihan tidak valid")
+
 while True:
     menu()
     pilihan = input("Pilih menu: ")
@@ -174,5 +220,7 @@ while True:
         kelola_favorit()
     elif pilihan == "6":
         filter_per_mapel()
+    elif pilihan == "7":
+        set_target_harian()
     else:
         print("Pilihan tidak valid")
