@@ -1,4 +1,5 @@
 catatan = []
+favorit = set()
 
 def tambah_catatan():
     while True:
@@ -59,6 +60,49 @@ def menu():
     print("2. Lihat catatan belajar")
     print("3. Total waktu belajar")
     print("4. Keluar")
+    print("5. Kelola Mapel Favorit")
+
+
+def kelola_favorit():
+    while True:
+        print("\n--- Kelola Mapel Favorit ---")
+        print("1. Tambah mapel favorit")
+        print("2. Hapus mapel favorit")
+        print("3. Lihat mapel favorit")
+        print("4. Kembali")
+        pilihan = input("Pilih: ").strip()
+
+        if pilihan == "1":
+            nama = input("Nama mapel yang ingin ditandai favorit: ").strip()
+            if not nama:
+                print("Nama mapel tidak boleh kosong.")
+                continue
+            favorit.add(nama)
+            print(f"{nama} ditambahkan ke mapel favorit.")
+
+        elif pilihan == "2":
+            if not favorit:
+                print("Belum ada mapel favorit untuk dihapus.")
+                continue
+            nama = input("Nama mapel yang ingin dihapus dari favorit: ").strip()
+            if nama in favorit:
+                favorit.remove(nama)
+                print(f"{nama} dihapus dari favorit.")
+            else:
+                print(f"{nama} tidak ditemukan di daftar favorit.")
+
+        elif pilihan == "3":
+            if not favorit:
+                print("Belum ada mapel favorit.")
+            else:
+                print("Mapel favorit:")
+                for i, m in enumerate(sorted(favorit), start=1):
+                    print(f"{i}. {m}")
+
+        elif pilihan == "4":
+            break
+        else:
+            print("Pilihan tidak valid")
 
 while True:
     menu()
@@ -73,5 +117,7 @@ while True:
     elif pilihan == "4":
         print("Terima kasih, terus semangat belajar!")
         break
+    elif pilihan == "5":
+        kelola_favorit()
     else:
         print("Pilihan tidak valid")
