@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime, timedelta
 
 catatan = []
 favorit = set()
@@ -65,7 +66,12 @@ def tambah_catatan():
         except ValueError:
             print("Masukkan angka bulat untuk durasi (mis. 30).")
 
-    entri = {"mapel": mapel, "topik": topik, "durasi": durasi}
+    entri = {
+        "mapel": mapel,
+        "topik": topik,
+        "durasi": durasi,
+        "tanggal": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
     catatan.append(entri)
     print("Catatan tersimpan.")
 
@@ -91,6 +97,83 @@ def total_waktu():
     total = sum(entri.get("durasi", 0) for entri in catatan)
     print(f"Total waktu belajar: {total} menit")
 
+def ringkasan_mingguan():
+    """Menampilkan ringkasan belajar 7 hari terakhir."""
+    if not catatan:
+        print("Belum ada catatan belajar.")
+        return
+    
+    # Hitung tanggal 7 hari yang lalu
+    hari_ini = datetime.now().date()
+    tanggal_awal = hari_ini - timedelta(days=6)
+    
+    # Kumpulkan data per hari
+    data_harian = {}
+    mapel_count = {}
+    
+    for entri in catatan:
+        # Parsing tanggal dari format "YYYY-MM-DD HH:MM:SS"
+        try:
+            tanggal_str = entri.get("tanggal", "")
+            if tanggal_str:
+                tanggal_obj = datetime.strptime(tanggal_str.split()[0], "%Y-%m-%d").date()
+            else:
+                # Untuk catatan lama tanpa tanggal, gunakan hari ini
+                tanggal_obj = hari_ini
+        except:
+            tanggal_obj = hari_ini
+        
+        # Hanya ambil catatan dari 7 hari terakhir
+        if tanggal_awal <= tanggal_obj <= hari_ini:
+            if tanggal_obj not in data_harian:
+                data_harian[tanggal_obj] = {"durasi": 0, "jumlah_sesi": 0, "mapel": []}
+            
+            durasi = entri.get("durasi", 0)
+            mapel = entri.get("mapel", "Tidak ada")
+            
+            data_harian[tanggal_obj]["durasi"] += durasi
+            data_harian[tanggal_obj]["jumlah_sesi"] += 1
+            data_harian[tanggal_obj]["mapel"].append(mapel)
+            
+            # Hitung frekuensi mapel
+            mapel_count[mapel] = mapel_count.get(mapel, 0) + 1
+    
+    if not data_harian:
+        print("Belum ada catatan belajar dalam 7 hari terakhir.")
+        return
+    
+    # Tampilkan ringkasan
+    print("\n=== RINGKASAN MINGGUAN ===")
+    print(f"Periode: {tanggal_awal} sampai {hari_ini}\n")
+    
+    # Tampilkan statistik harian
+    print("--- Statistik Harian ---")
+    total_durasi_minggu = 0
+    total_sesi_minggu = 0
+    
+    for tanggal in sorted(data_harian.keys()):
+        stat = data_harian[tanggal]
+        durasi = stat["durasi"]
+        sesi = stat["jumlah_sesi"]
+        nama_hari = tanggal.strftime("%A")
+        nama_hari_id = {
+            'Monday': 'Senin', 'Tuesday': 'Selasa', 'Wednesday': 'Rabu',
+            'Thursday': 'Kamis', 'Friday': 'Jumat', 'Saturday': 'Sabtu',
+            'Sunday': 'Minggu'
+        }.get(nama_hari, nama_hari)
+        
+        print(f"{tanggal} ({nama_hari_id}): {durasi} menit ({sesi} sesi)")
+        total_durasi_minggu += durasi
+        total_sesi_minggu += sesi
+    
+    print(f"\nTotal minggu: {total_durasi_minggu} menit ({total_sesi_minggu} sesi)")
+    
+    # Tampilkan mapel yang paling sering dipelajari
+    if mapel_count:
+        print("\n--- Mapel Terbanyak ---")
+        for mapel, count in sorted(mapel_count.items(), key=lambda x: x[1], reverse=True)[:5]:
+            print(f"{mapel}: {count} sesi")
+
 def menu():
     print("\n=== Study Log App ===")
     print("1. Tambah catatan belajar")
@@ -102,6 +185,7 @@ def menu():
     print("7. Target Harian")
     print("8. Simpan data ke file")
     print("9. Muat data dari file")
+    print("10. Ringkasan Mingguan")
 
 
 def kelola_favorit():
@@ -264,5 +348,7 @@ while True:
         simpan_ke_file()
     elif pilihan == "9":
         muat_dari_file()
+    elif pilihan == "10":
+        ringkasan_mingguan()
     else:
         print("Pilihan tidak valid")
