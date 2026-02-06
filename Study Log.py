@@ -1,6 +1,42 @@
+import json
+import os
+
 catatan = []
 favorit = set()
 target_harian = None  # dalam menit, None jika belum di-set
+FILE_SIMPAN = "study_log_data.json"
+
+def simpan_ke_file():
+    """Menyimpan semua data ke file JSON."""
+    try:
+        data = {
+            "catatan": catatan,
+            "favorit": list(favorit),
+            "target_harian": target_harian
+        }
+        with open(FILE_SIMPAN, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        print(f"Data berhasil disimpan ke {FILE_SIMPAN}")
+    except Exception as e:
+        print(f"Gagal menyimpan data: {e}")
+
+def muat_dari_file():
+    """Memuat semua data dari file JSON."""
+    global catatan, favorit, target_harian
+    try:
+        if not os.path.exists(FILE_SIMPAN):
+            print(f"File {FILE_SIMPAN} tidak ditemukan. Menggunakan data kosong.")
+            return
+        
+        with open(FILE_SIMPAN, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        catatan = data.get("catatan", [])
+        favorit = set(data.get("favorit", []))
+        target_harian = data.get("target_harian", None)
+        print(f"Data berhasil dimuat dari {FILE_SIMPAN}")
+    except Exception as e:
+        print(f"Gagal memuat data: {e}")
 
 def tambah_catatan():
     while True:
@@ -64,6 +100,8 @@ def menu():
     print("5. Kelola Mapel Favorit")
     print("6. Filter per mapel")
     print("7. Target Harian")
+    print("8. Simpan data ke file")
+    print("9. Muat data dari file")
 
 
 def kelola_favorit():
@@ -222,5 +260,9 @@ while True:
         filter_per_mapel()
     elif pilihan == "7":
         set_target_harian()
+    elif pilihan == "8":
+        simpan_ke_file()
+    elif pilihan == "9":
+        muat_dari_file()
     else:
         print("Pilihan tidak valid")
