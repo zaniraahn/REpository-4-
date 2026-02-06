@@ -46,7 +46,12 @@ def lihat_catatan():
     print(f"Total catatan: {len(catatan)}")
 
 def total_waktu():
-    pass
+    if not catatan:
+        print("Belum ada catatan belajar.")
+        return
+
+    total = sum(entri.get("durasi", 0) for entri in catatan)
+    print(f"Total waktu belajar: {total} menit")
 
 def menu():
     print("\n=== Study Log App ===")
