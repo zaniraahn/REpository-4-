@@ -32,7 +32,18 @@ def tambah_catatan():
     print("Catatan tersimpan.")
 
 def lihat_catatan():
-    pass
+    if not catatan:
+        print("Belum ada catatan belajar.")
+        return
+
+    print("\n=== Daftar Catatan Belajar ===")
+    for i, entri in enumerate(catatan, start=1):
+        mapel = entri.get("mapel", "-")
+        topik = entri.get("topik", "-")
+        durasi = entri.get("durasi", 0)
+        print(f"{i}. {mapel} - {topik} ({durasi} menit)")
+
+    print(f"Total catatan: {len(catatan)}")
 
 def total_waktu():
     pass
