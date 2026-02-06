@@ -1,2 +1,2 @@
-# REpository-4-
-Study Log
+# Repository 4-
+Aplikasi Study Log
